@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Arctic P12 Pro – Desk Fan</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --white: #ffffff;
+      --off: #f5f5f7;
+      --lgray: #e8e8ed;
+      --mgray: #86868b;
+      --dark: #1d1d1f;
+      --accent: #0071e3;
+      --radius: 18px;
+    }
+    html { scroll-behavior: smooth; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif; background: #fff; color: var(--dark); overflow-x: hidden; -webkit-font-smoothing: antialiased; }
+
+    /* NAV */
+    #nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      height: 52px;
+      background: rgba(255,255,255,0.85);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(0,0,0,0.08);
+      transition: background .3s;
+    }
+    .nav-inner { max-width: 1100px; margin: 0 auto; height: 100%; display: flex; align-items: center; justify-content: space-between; padding: 0 24px; }
+    .nav-logo { font-size: 17px; font-weight: 600; color: var(--dark); text-decoration: none; }
+    .nav-btn { font-size: 14px; font-weight: 500; color: var(--accent); text-decoration: none; padding: 6px 16px; border: 1.5px solid var(--accent); border-radius: 980px; transition: all .2s; }
+    .nav-btn:hover { background: var(--accent); color: #fff; }
+
+    /* REVEAL */
+    .r { opacity: 0; transform: translateY(36px); transition: opacity .7s ease, transform .7s ease; }
+    .r.on { opacity: 1; transform: none; }
+
+    /* HERO */
+    .hero { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 110px 24px 80px; background: linear-gradient(180deg,#f5f5f7 0%,#fff 60%); }
+    .hero-tag { font-size: 13px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); margin-bottom: 18px; }
+    .hero h1 { font-size: clamp(44px,8vw,96px); font-weight: 700; letter-spacing: -.04em; line-height: 1.02; margin-bottom: 18px; }
+    .hero h1 span { color: var(--accent); }
+    .hero p { font-size: clamp(16px,2.5vw,21px); color: var(--mgray); max-width: 480px; line-height: 1.5; margin-bottom: 48px; }
+    .hero-img { position: relative; width: min(460px,88vw); margin: 0 auto 52px; }
+    .hero-img img { width: 100%; border-radius: var(--radius); aspect-ratio: 4/3; object-fit: cover; display: block; transition: transform .8s cubic-bezier(.23,1,.32,1); }
+    .hero-img:hover img { transform: scale(1.03); }
+    .shadow { position: absolute; bottom: -18px; left: 50%; transform: translateX(-50%); width: 70%; height: 28px; background: radial-gradient(ellipse,rgba(0,0,0,.16) 0%,transparent 70%); filter: blur(8px); }
+
+    /* BTN */
+    .btn { display: inline-block; padding: 14px 36px; background: var(--accent); color: #fff; border-radius: 980px; font-size: 16px; font-weight: 500; text-decoration: none; transition: background .2s, transform .15s, box-shadow .2s; box-shadow: 0 4px 20px rgba(0,113,227,.25); position: relative; overflow: hidden; }
+    .btn:hover { background: #0077ed; transform: translateY(-1px); box-shadow: 0 8px 28px rgba(0,113,227,.35); }
+    .btn.dark { background: var(--dark); box-shadow: 0 4px 20px rgba(0,0,0,.15); }
+    .btn.dark:hover { background: #111; box-shadow: 0 8px 28px rgba(0,0,0,.25); }
+    .btn.full { width: 100%; text-align: center; }
+
+    /* SECTION LABELS */
+    .lbl { font-size: 13px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); margin-bottom: 10px; }
+    .sec-h { font-size: clamp(28px,5vw,52px); font-weight: 700; letter-spacing: -.03em; color: var(--dark); margin-bottom: 44px; line-height: 1.08; }
+
+    /* COLOR SECTION */
+    .color-sec { background: var(--off); padding: 100px 24px; text-align: center; }
+    .picker { display: flex; gap: 14px; justify-content: center; margin-bottom: 44px; flex-wrap: wrap; }
+    .cbtn { display: flex; align-items: center; gap: 10px; padding: 10px 22px; border: 2px solid var(--lgray); border-radius: 980px; background: #fff; font-size: 15px; font-weight: 500; cursor: pointer; transition: all .25s; color: var(--dark); }
+    .cbtn:hover { border-color: var(--mgray); }
+    .cbtn.on { border-color: var(--dark); background: var(--dark); color: #fff; }
+    .sw { width: 18px; height: 18px; border-radius: 50%; flex-shrink: 0; }
+    .sw-w { background: #fff; border: 1.5px solid #ccc; }
+    .sw-b { background: #1a1a1a; }
+    .cbtn.on .sw-w { border-color: rgba(255,255,255,.5); }
+
+    /* GALLERY */
+    .gallery { max-width: 820px; margin: 0 auto; display: flex; flex-direction: column; gap: 14px; }
+    .g-main { position: relative; border-radius: var(--radius); overflow: hidden; aspect-ratio: 16/10; background: var(--lgray); }
+    .g-main img { width: 100%; height: 100%; object-fit: cover; display: block; transition: opacity .4s; }
+    .overlay { position: absolute; inset: 0; background: rgba(10,10,10,.75); mix-blend-mode: multiply; opacity: 0; transition: opacity .5s; pointer-events: none; border-radius: inherit; }
+    .overlay.bk { opacity: 1; }
+    .thumbs { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; }
+    .th { border-radius: 12px; overflow: hidden; cursor: pointer; aspect-ratio: 4/3; position: relative; border: 2px solid transparent; transition: border-color .2s; }
+    .th img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .3s; }
+    .th:hover img { transform: scale(1.05); }
+    .th.on { border-color: var(--dark); }
+    .th-ov { position: absolute; inset: 0; background: rgba(10,10,10,.75); mix-blend-mode: multiply; opacity: 0; transition: opacity .5s; pointer-events: none; }
+    .bk-thumbs .th-ov { opacity: 1; }
+
+    /* SPECS */
+    .specs-sec { padding: 100px 24px; text-align: center; max-width: 1100px; margin: 0 auto; }
+    .specs-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(155px,1fr)); gap: 18px; }
+    .sc { background: var(--off); border-radius: var(--radius); padding: 36px 18px; transition: transform .3s, box-shadow .3s; }
+    .sc:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(0,0,0,.08); }
+    .sc-icon { font-size: 26px; margin-bottom: 10px; color: var(--mgray); }
+    .sc-val { font-size: 24px; font-weight: 700; letter-spacing: -.03em; color: var(--dark); margin-bottom: 5px; }
+    .sc-name { font-size: 12px; color: var(--mgray); font-weight: 500; }
+
+    /* FEATURES */
+    .feat-sec { padding: 60px 24px 100px; max-width: 1100px; margin: 0 auto; display: flex; flex-direction: column; gap: 80px; }
+    .feat-row { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: center; }
+    .feat-row.rev { direction: rtl; }
+    .feat-row.rev > * { direction: ltr; }
+    .feat-text h3 { font-size: clamp(26px,4vw,38px); font-weight: 700; letter-spacing: -.03em; line-height: 1.1; margin-bottom: 16px; color: var(--dark); }
+    .feat-text p { font-size: 16px; line-height: 1.65; color: var(--mgray); }
+    .feat-img { position: relative; border-radius: var(--radius); overflow: hidden; }
+    .feat-img img { width: 100%; aspect-ratio: 4/3; object-fit: cover; display: block; transition: transform .5s; }
+    .feat-img:hover img { transform: scale(1.03); }
+
+    /* CTA */
+    .cta { background: var(--dark); color: #fff; text-align: center; padding: 120px 24px; }
+    .cta h2 { font-size: clamp(34px,6vw,62px); font-weight: 700; letter-spacing: -.03em; margin-bottom: 14px; }
+    .cta p { font-size: 17px; color: rgba(255,255,255,.55); margin-bottom: 38px; }
+    .cta .btn { background: #fff; color: var(--dark); box-shadow: none; }
+    .cta .btn:hover { background: rgba(255,255,255,.9); }
+
+    /* CONTACT PAGE */
+    .contact-wrap { max-width: 980px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: start; padding: 110px 24px 80px; min-height: 100vh; }
+    .c-left h1 { font-size: clamp(34px,5vw,54px); font-weight: 700; letter-spacing: -.04em; line-height: 1.08; margin-bottom: 14px; }
+    .c-sub { font-size: 15px; color: var(--mgray); line-height: 1.6; margin-bottom: 36px; }
+    .c-img { border-radius: var(--radius); overflow: hidden; }
+    .c-img img { width: 100%; aspect-ratio: 4/3; object-fit: cover; display: block; }
+    .c-form { background: #fff; border-radius: var(--radius); padding: 38px; box-shadow: 0 4px 32px rgba(0,0,0,.06); display: flex; flex-direction: column; gap: 18px; }
+    .fg { display: flex; flex-direction: column; gap: 7px; }
+    .fg label { font-size: 12px; font-weight: 600; color: var(--dark); letter-spacing: .03em; }
+    .fg input, .fg select, .fg textarea { padding: 11px 15px; border: 1.5px solid var(--lgray); border-radius: 10px; font-size: 14px; font-family: inherit; color: var(--dark); background: #fff; outline: none; resize: none; transition: border-color .2s, box-shadow .2s; }
+    .fg input:focus, .fg select:focus, .fg textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(0,113,227,.12); }
+    .success { display: none; background: #fff; border-radius: var(--radius); padding: 56px 38px; text-align: center; box-shadow: 0 4px 32px rgba(0,0,0,.06); }
+    .success.on { display: block; }
+    .s-icon { width: 60px; height: 60px; border-radius: 50%; background: #34c759; color: #fff; font-size: 26px; display: flex; align-items: center; justify-content: center; margin: 0 auto 18px; }
+    .success h3 { font-size: 22px; font-weight: 700; margin-bottom: 7px; }
+    .success p { color: var(--mgray); font-size: 14px; }
+
+    /* FOOTER */
+    footer { padding: 28px 24px; text-align: center; font-size: 12px; color: var(--mgray); border-top: 1px solid var(--lgray); }
+
+    /* RESPONSIVE */
+    @media(max-width:768px) {
+      .feat-row { grid-template-columns: 1fr; gap: 28px; }
+      .feat-row.rev { direction: ltr; }
+      .contact-wrap { grid-template-columns: 1fr; padding-top: 80px; }
+      .c-img { display: none; }
+      .c-form { padding: 22px; }
+      .specs-grid { grid-template-columns: repeat(2,1fr); }
+    }
+    @media(prefers-reduced-motion:reduce) { .r, * { transition: none !important; } }
+  </style>
+</head>
+<body id="top">
+
+<!-- ── NAV ── -->
+<nav id="nav">
+  <div class="nav-inner">
+    <span class="nav-logo">Arctic P12 Pro</span>
+    <a class="nav-btn" href="#" onclick="showPage('contact');return false;">Kaufen</a>
+  </div>
+</nav>
+
+<!-- ══════════════ MAIN PAGE ══════════════ -->
+<div id="page-main">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-tag r">Desk Fan</div>
+    <h1 class="r">Arctic P12 Pro.<br><span>Stille Kraft.</span></h1>
+    <p class="r">Maximale Luftleistung. Minimales Geräusch. Für deinen Schreibtisch.</p>
+    <div class="hero-img r">
+      <img id="hero-img" src="RUIDbddd6fde227db4df6a3f41e8fc6a81432.jpg" alt="Arctic P12 Pro" />
+      <div class="shadow"></div>
+    </div>
+    <a class="btn r" href="#" onclick="showPage('contact');return false;">Jetzt kaufen</a>
+  </section>
+
+  <!-- COLOR -->
+  <section class="color-sec">
+    <p class="lbl r">Farbe wählen</p>
+    <h2 class="sec-h r">Zwei Versionen. Eine Entscheidung.</h2>
+    <div class="picker r">
+      <button class="cbtn on" data-color="white"><span class="sw sw-w"></span>Weiß</button>
+      <button class="cbtn" data-color="black"><span class="sw sw-b"></span>Schwarz</button>
+    </div>
+    <div class="gallery r">
+      <div class="g-main">
+        <img id="g-img" src="RUIDbddd6fde227db4df6a3f41e8fc6a81432.jpg" alt="Fan" />
+        <div class="overlay" id="g-ov"></div>
+      </div>
+      <div class="thumbs" id="thumbs">
+        <div class="th on" data-src="RUIDbddd6fde227db4df6a3f41e8fc6a81432.jpg"><img src="RUIDbddd6fde227db4df6a3f41e8fc6a81432.jpg" alt="Vorne"/><div class="th-ov"></div></div>
+        <div class="th" data-src="RUID82b14790256846f5bfb60456bfcf4449.jpg"><img src="RUID82b14790256846f5bfb60456bfcf4449.jpg" alt="Hinten"/><div class="th-ov"></div></div>
+        <div class="th" data-src="RUID6777b86b0f8a4423a4f227ed17746a52.jpg"><img src="RUID6777b86b0f8a4423a4f227ed17746a52.jpg" alt="Links"/><div class="th-ov"></div></div>
+        <div class="th" data-src="RUID64257adf4fc742aab22577b1c7f7afa3.jpg"><img src="RUID64257adf4fc742aab22577b1c7f7afa3.jpg" alt="Rechts"/><div class="th-ov"></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SPECS -->
+  <section class="specs-sec">
+    <p class="lbl r">Technische Details</p>
+    <h2 class="sec-h r">Gebaut für Performance.</h2>
+    <div class="specs-grid">
+      <div class="sc r"><div class="sc-icon">⌀</div><div class="sc-val">120 mm</div><div class="sc-name">Lüfterdurchmesser</div></div>
+      <div class="sc r"><div class="sc-icon">◎</div><div class="sc-val">1800 RPM</div><div class="sc-name">Max. Drehzahl</div></div>
+      <div class="sc r"><div class="sc-icon">≋</div><div class="sc-val">56,3 m³/h</div><div class="sc-name">Luftdurchsatz</div></div>
+      <div class="sc r"><div class="sc-icon">♩</div><div class="sc-val">22,5 dB(A)</div><div class="sc-name">Geräuschpegel</div></div>
+      <div class="sc r"><div class="sc-icon">⚡</div><div class="sc-val">0,5 W</div><div class="sc-name">Leistungsaufnahme</div></div>
+      <div class="sc r"><div class="sc-icon">↕</div><div class="sc-val">360°</div><div class="sc-name">Neigungswinkel</div></div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section class="feat-sec">
+    <div class="feat-row r">
+      <div class="feat-text">
+        <p class="lbl">Design</p>
+        <h3>Präziser Halt.<br>Jeder Winkel.</h3>
+        <p>Das robuste Scharnier aus verstärktem Kunststoff hält den Lüfter zuverlässig in jeder Position – vom horizontalen bis zum steilen Winkel.</p>
+      </div>
+      <div class="feat-img">
+        <img src="RUID6777b86b0f8a4423a4f227ed17746a52.jpg" alt="Scharnier" />
+        <div class="overlay" id="f-ov1"></div>
+      </div>
+    </div>
+    <div class="feat-row rev r">
+      <div class="feat-text">
+        <p class="lbl">Schutzgitter</p>
+        <h3>Sicher.<br>Stabil. Leise.</h3>
+        <p>Das feinmaschige Gitter schützt die Rotorblätter und sorgt für einen gleichmäßigen, geräuscharmen Luftstrom – auch bei Dauerbetrieb.</p>
+      </div>
+      <div class="feat-img">
+        <img src="RUID64257adf4fc742aab22577b1c7f7afa3.jpg" alt="Seite" />
+        <div class="overlay" id="f-ov2"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta r">
+    <h2>Bereit für frische Luft?</h2>
+    <p>Erhältlich in Weiß und Schwarz.</p>
+    <a class="btn" href="#" onclick="showPage('contact');return false;">Jetzt bestellen</a>
+  </section>
+
+  <footer><p>© 2026 Arctic P12 Pro Desk Fan. Alle Rechte vorbehalten.</p></footer>
+</div>
+
+<!-- ══════════════ CONTACT PAGE ══════════════ -->
+<div id="page-contact" style="display:none;">
+  <div class="contact-wrap">
+    <div class="c-left r">
+      <p class="lbl">Bestellung</p>
+      <h1>Dein neuer<br>Lieblingsventilator.</h1>
+      <p class="c-sub">Füll das Formular aus und wir melden uns innerhalb von 24 Stunden.</p>
+      <div class="c-img">
+        <img src="RUIDbddd6fde227db4df6a3f41e8fc6a81432.jpg" alt="Arctic P12 Pro" />
+      </div>
+    </div>
+    <div class="c-right r">
+      <form class="c-form" id="cform">
+        <div class="fg"><label>Name</label><input type="text" placeholder="Max Mustermann" required /></div>
+        <div class="fg"><label>E-Mail</label><input type="email" placeholder="max@beispiel.de" required /></div>
+        <div class="fg"><label>Farbe</label>
+          <select>
+            <option>Weiß</option>
+            <option>Schwarz</option>
+          </select>
+        </div>
+        <div class="fg"><label>Anzahl</label><input type="number" min="1" max="10" value="1" /></div>
+        <div class="fg"><label>Nachricht (optional)</label><textarea rows="4" placeholder="Fragen, Wünsche…"></textarea></div>
+        <button type="submit" class="btn dark full">Anfrage senden</button>
+      </form>
+      <div class="success" id="csuccess">
+        <div class="s-icon">✓</div>
+        <h3>Anfrage erhalten!</h3>
+        <p>Wir melden uns bald bei dir.</p>
+        <a class="btn" href="#" onclick="showPage('main');return false;" style="margin-top:1.5rem;display:inline-block;">Zurück</a>
+      </div>
+    </div>
+  </div>
+  <footer><p>© 2026 Arctic P12 Pro Desk Fan. Alle Rechte vorbehalten.</p></footer>
+</div>
+
+<script>
+// ── Page switcher ──
+function showPage(id) {
+  document.getElementById('page-main').style.display = id === 'main' ? 'block' : 'none';
+  document.getElementById('page-contact').style.display = id === 'contact' ? 'block' : 'none';
+  window.scrollTo(0, 0);
+  if (id !== 'main') initReveal();
+}
+
+// ── Reveal on scroll ──
+function initReveal() {
+  const els = document.querySelectorAll('.r:not(.on)');
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting) {
+        const sibs = [...e.target.parentElement.querySelectorAll('.r')];
+        const idx = sibs.indexOf(e.target);
+        setTimeout(() => e.target.classList.add('on'), idx * 75);
+        obs.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -30px 0px' });
+  els.forEach(el => obs.observe(el));
+}
+initReveal();
+
+// ── Navbar scroll ──
+window.addEventListener('scroll', () => {
+  document.getElementById('nav').style.background =
+    window.scrollY > 20 ? 'rgba(255,255,255,.97)' : 'rgba(255,255,255,.85)';
+}, { passive: true });
+
+// ── Hero parallax ──
+const heroImg = document.getElementById('hero-img');
+window.addEventListener('scroll', () => {
+  if (heroImg) heroImg.style.transform = `translateY(${window.scrollY * 0.07}px)`;
+}, { passive: true });
+
+// ── Color switcher ──
+let isBlack = false;
+document.querySelectorAll('.cbtn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    isBlack = btn.dataset.color === 'black';
+    document.querySelectorAll('.cbtn').forEach(b => b.classList.remove('on'));
+    btn.classList.add('on');
+    // overlays
+    ['g-ov','f-ov1','f-ov2'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.classList.toggle('bk', isBlack);
+    });
+    // thumbs
+    document.getElementById('thumbs').classList.toggle('bk-thumbs', isBlack);
+    // hero
+    if (heroImg) heroImg.style.filter = isBlack ? 'brightness(0.22) contrast(1.1)' : 'none';
+  });
+});
+
+// ── Gallery thumbs ──
+const gImg = document.getElementById('g-img');
+document.querySelectorAll('.th').forEach(th => {
+  th.addEventListener('click', () => {
+    if (!gImg) return;
+    gImg.style.opacity = '0';
+    setTimeout(() => { gImg.src = th.dataset.src; gImg.style.opacity = '1'; }, 200);
+    document.querySelectorAll('.th').forEach(t => t.classList.remove('on'));
+    th.classList.add('on');
+  });
+});
+
+// ── Contact form ──
+const cform = document.getElementById('cform');
+const csuccess = document.getElementById('csuccess');
+if (cform) {
+  cform.addEventListener('submit', e => {
+    e.preventDefault();
+    const btn = cform.querySelector('button');
+    btn.textContent = 'Wird gesendet…';
+    btn.disabled = true;
+    setTimeout(() => {
+      cform.style.display = 'none';
+      csuccess.classList.add('on');
+    }, 1200);
+  });
+}
+
+// ── Ripple ──
+document.addEventListener('click', e => {
+  const btn = e.target.closest('.btn');
+  if (!btn) return;
+  const r = document.createElement('span');
+  const rect = btn.getBoundingClientRect();
+  const s = Math.max(rect.width, rect.height);
+  r.style.cssText = `position:absolute;width:${s}px;height:${s}px;border-radius:50%;background:rgba(255,255,255,.28);transform:scale(0);animation:rpl .5s ease-out forwards;left:${e.clientX-rect.left-s/2}px;top:${e.clientY-rect.top-s/2}px;pointer-events:none;`;
+  btn.style.overflow = 'hidden';
+  btn.appendChild(r);
+  setTimeout(() => r.remove(), 600);
+});
+const ks = document.createElement('style');
+ks.textContent = '@keyframes rpl{to{transform:scale(2.5);opacity:0}}';
+document.head.appendChild(ks);
+</script>
+</body>
+</html>
